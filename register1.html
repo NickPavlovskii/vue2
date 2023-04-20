@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1</title>
+    <link rel="stylesheet" href="css//bootstrap.min.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link href="css/styles.css" rel="stylesheet">
+    <script src="js/vue.js"></script>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="sample">
+            <form @submit.prevent = "formSub = true" v-if = "!formSub">
+        		<div class="progress">
+					<div class="progress-bar" :style = 'progressWidth'></div>
+				</div>
+				<div>
+					<div class="form-group" v-for="(item , index) in info">
+	                    <label>{{item.name}}</label>
+						<!-- <span v-if = "controls[index].error"> <i class="fa fa-check-circle" aria-hidden="true"></i></span>
+						<span v-else> <i class="fa fa-times-circle" aria-hidden="true"></i></span> -->
+	                    <span class="fa"
+							v-if="controls[index].activated" 
+							:class = "controls[index].error ? 
+								' fa-times-circle text-danger'
+								: 'fa-check-circle text-success'
+									
+							"
+					
+						></span>
+						
+						<input 
+						type="text" 
+						class="form-control"
+						:value = "item.value"
+						@input="onInput(index, $event.target.value)"
+						@focus="onFocus(index)"
+						>
+
+					
+<span class="error-message" v-if="controls[index].error && controls[index].touched">{{item.errorMessage}}</span>
+
+	                </div>
+				</div>
+				<button class="btn btn-primary" :disabled="done !== info.length">
+					Send Data
+				</button> 
+				<span class="success" v-if="done === info.length">Вы успешно зарегистрировались!</span>
+			</form>
+			<div v-else>
+				<table class="table table-bordered">
+					<tr v-for="(item,index) in info">
+						<td>{{item.name}}</td>
+						<td>{{item.value}}</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+    </div>
+	<script>
+		
+		new Vue({
+			el: '.sample',
+			data: {
+				info: [
+					{
+						name: 'Name',
+						value: '',
+						pattern: /^[a-zA-Z ]{2,30}$/,
+						errorMessage: 'Имя должно содержать только буквы и пробелы, длиной от 2 до 30 символов'
+					},
+					{
+						name: 'Phone',
+						value: '',
+						pattern: /^[0-9]{7,14}$/,
+						errorMessage: 'Некорректный формат телефона'
+					},
+					{
+						name: 'Email',
+						value: '',
+						pattern: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
+						errorMessage: 'Некорректный формат email'
+					},
+					{
+						name: 'Some Field 1',
+						value: '',
+						pattern: /.+/,
+						
+					},
+					{
+						name: 'Some Field 2',
+						value: '',
+						pattern: /.+/,
+						
+					}
+				],
+				controls: [],
+				formSub: false
+			},
+ beforeMount(){
+		for(let i = 0; i < this.info.length; i++){
+			this.controls.push({
+				error: true,
+				activated : this.info[i].value != ''
+			});
+		}
+ },
+			methods:{
+				onInput(index, value){
+					
+					let data = this.info[index];
+					let control = this.controls[index];
+
+					data.value = value;
+	control.error = !data.pattern.test(value);
+	control.activated = true
+				// console.log(this.controls)
+				},
+				onFocus(index) {
+        let control = this.controls[index];
+        control.touched = true;
+    }
+			
+			},
+		
+		computed:{
+
+			done(){
+					let done = 0;
+					for(let i= 0; i < this.controls.length; i++){
+						if(!this.controls[i].error){
+							done++;
+						}
+
+					}
+						return done;
+				},
+				progressWidth(){
+			return{
+				width: ((this.done / this.info.length) * 100 )+ '%',
+				// color:  'blue'
+			}
+		 }
+
+		},
+		
+		});
+	</script>
+</body>
+</html>

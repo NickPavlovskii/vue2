@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация пользователя</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link href="css/styles.css" rel="stylesheet">
+    <script src="js/vue.js"></script>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="sample">
+            <form>
+                <!-- @submit.prevent = "formSub = true" v-if = "!formSub" -->
+                <div class="progress" >
+                    <div class="progress-bar" :style="progressWidth"></div>
+                </div>
+                <div>
+                    <div class="form-group" v-for="(item, index) in info">
+                        <label>{{item.label}}</label>
+                        <span class="fa"
+                        v-if="controls[index].activated" 
+                        :class="{'fa-times-circle text-danger': controls[index].error, 'fa-check-circle text-success': !controls[index].error}"></span>
+                        <input type="text" class="form-control" :value="item.value" @input="onInput(index, $event.target.value)" @focus="onFocus(index)">
+<span class="error-message" v-if="controls[index].error && controls[index].touched">{{item.errorMessage}}</span>
+
+                    </div>
+                </div>
+                <button class="btn btn-primary" :disabled="done !== info.length">
+                    Зарегистрироваться
+                </button> 
+                <span class="success" v-if="done === info.length">Вы успешно зарегистрировались!</span>
+            </form>
+        </div>
+    </div>
+    <script>
+        new Vue({
+            el: '.sample',
+            data: {
+                info: [
+                    {
+                        label: 'Имя',
+                        value: '',
+                        pattern: /^[a-zA-Zа-яА-Я ]{2,30}$/,
+                        errorMessage: 'Имя должно содержать только буквы и пробелы, длиной от 2 до 30 символов'
+                    },
+                    {
+                        label: 'Телефон',
+                        value: '',
+                        pattern: /^[0-9+()-]{7,14}$/,
+                        errorMessage: 'Некорректный формат телефона'
+                    },
+                    {
+                        label: 'Email',
+                        value: '',
+                        pattern: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
+                        errorMessage: 'Некорректный формат email'
+                    },
+                    {
+                        label: 'Пароль',
+                        value: '',
+                        pattern: /.{6,}/,
+                        errorMessage: 'Пароль должен содержать не менее 6 символов'
+                    }
+                ],
+                controls: [],
+                // formSub: false
+            },
+            beforeMount() {
+                for (let i = 0; i < this.info.length; i++) {
+                    this.controls.push({
+                        error: true,
+                        activated : this.info[i].value != ''
+
+                    });
+                }
+            },
+            methods: {
+                onInput(index, value) {
+                    let data = this.info[index];
+                    let control = this.controls[index];
+                    data.value = value;
+                    control.error = !data.pattern.test(value);
+                    control.activated = true
+                },
+                onFocus(index) {
+        let control = this.controls[index];
+        control.touched = true;
+    }
+            },
+            computed: {
+                done() {
+                    let done = 0;
+                    for (let i = 0; i < this.controls.length; i++) {
+                        if (!this.controls[i].error) {
+done++;
+}
+}
+return done;
+},
+progressWidth() {
+return {
+width: ((this.done / this.info.length) * 100) + '%',
+}
+}
+},
+});
+</script>
+
+</body>
+</html>
+<!-- Add styles here -->
+<style>
+    body {
+        background-color: #f7f7f7;
+        font-family: 'Open Sans', sans-serif;
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #4e4e4e;
+    }
+
+    .wrapper {
+        max-width: 500px;
+        margin: 50px auto;
+        padding: 30px;
+        background-color: #ffffff;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+        box-shadow: 0px 3px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group {
+        position: relative;
+        margin-bottom: 25px;
+    }
+
+    .form-label {
+        position: absolute;
+        top: 20px;
+        left: 10px;
+        transition: all 0.2s ease-out;
+    }
+
+    .form-control {
+        padding: 20px 10px 10px 10px;
+        border: none;
+        border-radius: 5px;
+        background-color: #f2f2f2;
+        color: #4e4e4e;
+    }
+
+    .form-control:focus {
+        outline: none;
+        box-shadow: 0px 0px 0px 2px #007bff;
+    }
+
+    .form-label.focused {
+        top: 5px;
+        font-size: 14px;
+    }
+
+    .fa {
+        position: absolute;
+        top: 20px;
+        right: 10px;
+        font-size: 20px;
+        transition: all 0.2s ease-out;
+    }
+
+    .fa-times-circle {
+        color: #dc3545;
+    }
+
+    .fa-check-circle {
+        color: #28a745;
+    }
+
+    .fa.focused {
+        top: 5px;
+        font-size: 14px;
+    }
+
+    
+
+
+    .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        background-color: #007bff;
+        color: #ffffff;
+        font-size: 18px;
+        cursor: pointer;
+        transition: all 0.2s ease-out;
+    }
+
+    .btn:hover {
+        background-color: #0062cc;
+    }
+
+    table {
+        width: 100%;
+        margin-top: 25px;
+        border-collapse: collapse;
+        border: 1px solid #dee2e6;
+    }
+
+    th,
+    td {
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #dee2e6;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+
+    .text-danger {
+        color: #dc3545;
+    }
+
+    .text-success {
+        color: #28a745;
+    }
+</style>
+
